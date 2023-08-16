@@ -367,7 +367,6 @@ function draw() {
         }
       })
       Player.renderer();
-      });
       if (Player.death) {
         new Button("ReStart", windowWidth / 2, windowHeight / 3, () => {
           FieldObjects = FObj();
