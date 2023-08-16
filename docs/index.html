@@ -1,11 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="./libs/p5.min.js"></script>
+    <script src="./libs/p5.sound.min.js"></script>
+    <script src="./libs/jquery.min.js"></script>
+    <meta charset="utf-8" />
     <title>DevTool</title>
-</head>
-<body>
-    <input type="range" min="1" max="50" step="0.5" id="">
-</body>
+    <script src="./devtool.js"></script>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #container {
+      display: block;
+      height: 600px;
+      width: 600px;
+      overflow: auto;
+    }
+    .flex {
+      display: flex;
+    }
+  </style>
+  <script>
+    function moveCenter() {
+      $("#container").scrollTop($("#canvsize").val() / 2 - 300);
+      $("#container").scrollLeft($("#canvsize").val() / 2 - 300);
+      console.log($("#canvsize").val() / 2);
+    }
+  </script>
+  <body>
+    <div class="flex">
+      <main id="container"></main>
+      <div>
+        <div>
+          ステージの大きさ<input
+            type="range"
+            min="400"
+            max="5000"
+            step="10"
+            id="canvsize"
+          /><input type="number" id="canvsizev" />
+        </div>
+        <div>
+          目印の間隔<input
+            type="range"
+            min="1"
+            max="19"
+            step="0.5"
+            id="distpoint"
+          /><input type="number" id="distpointv" />
+        </div>
+        <button onclick="moveCenter()">キャンバスの中心に移動する</button><br />
+        <br>
+        <textarea name="" id="out"></textarea
+        ><button>クリップボードにコピー</button>
+      </div>
+    </div>
+  </body>
 </html>

@@ -30,12 +30,15 @@ function circleLineCollision(
     normalizedLineVector.y * circleVector.y;
 
   // 投影点が線分の範囲内にあるかチェック
-  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared)) {
+
+  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
     // 円の中心と投影点の距離を求める
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
         (circleVector.y - projection * normalizedLineVector.y) ** 2
     );
+
+    //console.log(distanceToCircle,radius);
 
     // 距離が円の半径以下であれば当たりとみなす
     if (distanceToCircle <= radius) {
@@ -173,7 +176,6 @@ class wall {
     this.y = y;
     this.x2 = x2;
     this.y2 = y2;
-    this.slope = (x2 - x) / y2 - y;
     this.width = width;
     this.touchPlayer = false;
     this.chx = 0;
@@ -234,17 +236,16 @@ let Player = new Chara(window.innerWidth / 2, window.innerHeight / 2, 80, 0);
 let Speed = 0;
 let Decelerationrate = 1.05;
 const FObj = () => {
-  return(
-    [
-      { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 1 },
-      { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 1 },
-      { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 1 },
-      { type: "wall", x: 200, y: 200, x2: 200, y2: 50, width: 1 },
-      { type: "wall", x: 200, y: -200, x2: 200, y2: -50, width: 1 },
-      { type: "wall", x: 400, y: -200, x2: 450, y2: -50, width: 1 },
-    ]
-  )
-}
+  return [
+    { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 1 },
+    { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 1 },
+    { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 1 },
+    { type: "wall", x: 200, y: 200, x2: 200, y2: 80, width: 1 },
+    { type: "wall", x: 200, y: -200, x2: 200, y2: -80, width: 1 },
+    { type: "wall", x: 200, y: 80, x2: 800, y2: 80, width: 1 },
+    { type: "wall", x: 200, y: -80, x2: 800, y2: -80, width: 1 },
+  ];
+};
 let FieldObjects = FObj();
 
 function preload() {
@@ -319,7 +320,17 @@ function draw() {
         }
       });
       if (Player.death) {
-        new Button("ReStart?", windowWidth / 2, windowHeight / 2, () => {
+        new Button("ReStart", windowWidth / 2, windowHeight / 3, () => {
+          FieldObjects = FObj();
+          Player.x = windowWidth / 2;
+          Player.y = windowHeight / 2;
+          Player.direction = 0;
+          Player.deathAnimation = 0;
+          Player.death = false;
+        }).renderer();
+
+        new Button("Back Home", windowWidth / 2, (windowHeight * 2) / 3, () => {
+          mode = "";
           FieldObjects = FObj();
           Player.x = windowWidth / 2;
           Player.y = windowHeight / 2;
