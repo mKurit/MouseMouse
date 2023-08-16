@@ -5,39 +5,43 @@ class Button {
     this.x = x;
     this.y = y;
     this.textsize = 60;
+    this.smalltextsize = 60;
+    this.largetextsize = 70;
+    this.biggerval = 20;
     this.func = func;
   }
 
   renderer() {
-    textSize(this.textsize);
+    this.textsize = this.smalltextsize;
     if (
-      mouseX >= this.x - textWidth(this.text) / 2 - 10 &&
-      mouseX <= this.x + textWidth(this.text) / 2 + 10 &&
-      mouseY >= this.y - this.textsize / 2 - 5 &&
-      mouseY <= this.y + this.textsize / 2 + 5
+      mouseX >= this.x - textWidth(this.text) / 2 - this.biggerval / 2 &&
+      mouseX <= this.x + textWidth(this.text) / 2 + this.biggerval / 2 &&
+      mouseY >= this.y - this.textsize / 2 - this.biggerval / 4 &&
+      mouseY <= this.y + this.textsize / 2 + this.biggerval / 4
     ) {
       if (mouseIsPressed) {
         Audios.ClickSound.play();
         this.func.call();
       }
-      this.textsize = 70;
+      this.textsize = this.largetextsize;
     } else {
-      this.textsize = 60;
+      this.textsize = this.smalltextsize;
     }
+    textSize(this.textsize);
     textFont(FontsMedium);
     fill("#ffffff");
     rect(
-      this.x - textWidth(this.text) / 2 - 10,
-      this.y - this.textsize / 2 - 5,
-      textWidth(this.text) + 20,
-      this.textsize + 10,
+      this.x - textWidth(this.text) / 2 - this.biggerval / 2,
+      this.y - this.textsize / 2 - this.biggerval / 4,
+      textWidth(this.text) + this.biggerval,
+      this.textsize + this.biggerval / 2,
       5
     );
     fill("#000000");
     text(
       this.text,
       this.x - textWidth(this.text) / 2,
-      this.y + this.textsize / 4
+      this.y + this.textsize / 3
     );
     /*
     stroke("purple");
@@ -80,14 +84,14 @@ class Chara {
     );
     fill("#ffffff");
     circle(
-      this.x - ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) + (this.size / 24) * Math.cos(this.direction + Math.PI / 6),
-      this.y - ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) + (this.size / 24) * Math.sin(this.direction + Math.PI / 6),
+      this.x - ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) + (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+      this.y - ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) + (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
       this.size / 16
     );
 
     circle(
-      this.x - ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) + (this.size / 24) * Math.cos(this.direction + Math.PI / 6),
-      this.y - ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) + (this.size / 24) * Math.sin(this.direction + Math.PI / 6),
+      this.x - ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) + (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+      this.y - ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) + (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
       this.size / 16
     );
   }
@@ -111,6 +115,31 @@ class wall {
   }
 }
 
+class goal {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  renderer() {
+    fill("#ffff00");
+    rect(windowWidth / 2 + this.x - 50, windowHeight / 2 + this.y - 50, 100, 100);
+    textFont(FontsMedium);
+    textSize(25);
+    fill("#000000");
+    text(
+      "GOAL",
+      windowWidth / 2 + this.x - textWidth("GOAL") / 2,
+      windowHeight / 2 + this.y + 25 / 4
+    );
+  }
+}
+
+function LineCircleHit(cx, cy, cr, lx, ly, lx1, ly2) {
+  let a, b, c = 0;
+  Math.abs(a * cx + b * xy + c) / Math.sqrt(a ** 2 + b ** 2)
+}
+
 function devtool() {
   line(windowWidth / 2, 0, windowWidth / 2, windowHeight);
 }
@@ -124,6 +153,13 @@ let Buttons = {
     mode = "start";
     console.log("butn pressed!");
   }),
+  Sosahouhou: new Button("操作方法", window.innerWidth - 100, 60, function () {
+    console.log("操作方法");
+  }),
+  Home: new Button("≡", window.innerWidth - 40, 40, function () {
+    mode = "";
+    console.log("ホームに戻る");
+  }),
 }
 let Audios = {
   ClickSound: new Audio("./assets/click.mp3"),
@@ -135,8 +171,12 @@ let FieldObjects = [
   { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
   { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
   { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
-  { type: "wall", x: 200, y: 200, x2: 200, y2: 50, width: 5 },
-  { type: "wall", x: 200, y: -200, x2: 200, y2: -50, width: 5 },
+  { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+  { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+  { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
+  { type: "wall", x: 200, y: -75, x2: 475, y2: -75, width: 5 },
+  { type: "wall", x: 475, y: -75, x2: 475, y2: 75, width: 5 },
+  { type: "goal", x: 400, y: 0 },
 ];
 
 function preload() {
@@ -164,10 +204,18 @@ function draw() {
         windowHeight / 3
       );
       Buttons.TopPageBtn.renderer();
+      Buttons.Sosahouhou.smalltextsize = 30;
+      Buttons.Sosahouhou.largetextsize = 40;
+      Buttons.Sosahouhou.biggerval = 10;
+      Buttons.Sosahouhou.renderer();
       //devtool();
       break;
 
     case "start":
+      Buttons.Home.smalltextsize = 50;
+      Buttons.Home.largetextsize = 50;
+      Buttons.Home.biggerval = 0;
+      Buttons.Home.renderer();
       console.log(Speed);
       if (mouseIsPressed) {
         Speed += .2;
@@ -182,7 +230,6 @@ function draw() {
       } else {
         Player.direction = Math.atan((mouseY - windowHeight / 2) / (mouseX - windowWidth / 2));
       }
-      Player.renderer();
       FieldObjects.map((e, index) => {
         switch (e.type) {
           case "wall":
@@ -193,8 +240,16 @@ function draw() {
             let newwall = new wall(e.x, e.y, e.x2, e.y2, e.width);
             newwall.renderer();
             break;
+
+          case "goal":
+            FieldObjects[index].x += Speed * cos(Player.direction);
+            FieldObjects[index].y += Speed * sin(Player.direction);
+            let goalobj = new goal(e.x, e.y);
+            goalobj.renderer();
+            break;
         }
       })
+      Player.renderer();
       break;
   }
 }
