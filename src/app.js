@@ -8,39 +8,34 @@ function circleLineCollision(
   lineEndX,
   lineEndY
 ) {
-  // 線分の始点から終点へのベクトルを求める
+
   var lineVector = { x: lineEndX - lineStartX, y: lineEndY - lineStartY };
 
-  // 線分の始点から円の中心へのベクトルを求める
   var circleVector = { x: circleX - lineStartX, y: circleY - lineStartY };
 
-  // 線分の長さの2乗を求める
   var lineLengthSquared =
     lineVector.x * lineVector.x + lineVector.y * lineVector.y;
 
-  // 線分のベクトルを正規化する
   var normalizedLineVector = {
     x: lineVector.x / Math.sqrt(lineLengthSquared),
     y: lineVector.y / Math.sqrt(lineLengthSquared),
   };
 
-  // 線分上での円の中心の投影点を求める
   var projection =
     normalizedLineVector.x * circleVector.x +
     normalizedLineVector.y * circleVector.y;
 
-  // 投影点が線分の範囲内にあるかチェック
+
 
   if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
-    // 円の中心と投影点の距離を求める
+
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
-        (circleVector.y - projection * normalizedLineVector.y) ** 2
+      (circleVector.y - projection * normalizedLineVector.y) ** 2
     );
 
     //console.log(distanceToCircle,radius);
 
-    // 距離が円の半径以下であれば当たりとみなす
     if (distanceToCircle <= radius) {
       return true;
     }
@@ -57,8 +52,8 @@ class Button {
     this.y = y;
     this.textsize = 60;
     this.smalltextsize = 60;
-    this.largetextsize = 70;
-    this.biggerval = 20;
+    this.largetextsize = 64;
+    this.biggerval = 4;
     this.func = func;
   }
 
@@ -81,6 +76,8 @@ class Button {
     textSize(this.textsize);
     textFont(FontsMedium);
     fill("#ffffff");
+    stroke("black");
+    strokeWeight(1);
     rect(
       this.x - textWidth(this.text) / 2 - this.biggerval / 2,
       this.y - this.textsize / 2 - this.biggerval / 4,
@@ -110,17 +107,17 @@ class Chara {
     this.y = y;
     this.size = size;
     this.direction = direction;
-    this.death = false;
+    this.state = "arrive";
     this.deathAnimation = 0;
   }
 
   renderer() {
     fill("#999999");
-    if (this.death && this.deathAnimation == 0) {
+    if (this.state == "death" && this.deathAnimation == 0) {
       this.deathAnimation = 1;
       new Audio("./assets/death.mp3").play();
     }
-    if (this.death && this.deathAnimation != 0) {
+    if (this.state == "death" && this.deathAnimation != 0) {
       for (var i = 0; i < 12; i++) {
         fill("#999999");
         circle(
@@ -153,21 +150,21 @@ class Chara {
       fill("#ffffff");
       circle(
         this.x -
-          ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
-          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
+        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-          ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
-          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
+        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
 
       circle(
         this.x -
-          ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
-          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
+        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-          ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
-          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
+        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
     }
@@ -218,11 +215,14 @@ class goal {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.isGoal = false;
+    this.chx = 0;
+    this.chy = 0;
   }
 
   renderer() {
     fill("#ffff00");
-    rect(windowWidth / 2 + this.x - 50, windowHeight / 2 + this.y - 50, 100, 100);
+    circle(windowWidth / 2 + this.x, windowHeight / 2 + this.y, 100, 100);
     textFont(FontsMedium);
     textSize(25);
     fill("#000000");
@@ -231,12 +231,10 @@ class goal {
       windowWidth / 2 + this.x - textWidth("GOAL") / 2,
       windowHeight / 2 + this.y + 25 / 4
     );
+    if (Math.sqrt((this.x - this.chx) ** 2 + (this.y - this.chy) ** 2) < 25) {
+      this.isGoal = true;
+    }
   }
-}
-
-function LineCircleHit(cx, cy, cr, lx, ly, lx1, ly2) {
-  let a, b, c = 0;
-  Math.abs(a * cx + b * xy + c) / Math.sqrt(a ** 2 + b ** 2)
 }
 
 function devtool() {
@@ -255,7 +253,7 @@ let Buttons = {
   Sosahouhou: new Button("操作方法", window.innerWidth - 100, 60, function () {
     console.log("操作方法");
   }),
-  Home: new Button("≡", window.innerWidth - 40, 40, function () {
+  Home: new Button("🏠", window.innerWidth - 40, 40, function () {
     mode = "";
     console.log("ホームに戻る");
   }),
@@ -265,21 +263,48 @@ let Audios = {
 };
 let Player = new Chara(window.innerWidth / 2, window.innerHeight / 2, 80, 0);
 let Speed = 0;
+let StageNum = 0;
 let Decelerationrate = 1.05;
-const FObj = () => {
-  return [
-  { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
-  { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
-  { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
-  { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
-  { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
-  { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
-  { type: "wall", x: 200, y: -75, x2: 475, y2: -75, width: 5 },
-  { type: "wall", x: 475, y: -75, x2: 475, y2: 75, width: 5 },
-  { type: "goal", x: 400, y: 0 },
-  ];
+let wait = 180;
+const FObj = (StageNumber) => {
+  const StageData = ([[
+    { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
+    { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
+    { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
+    { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+    { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+    { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
+    { type: "wall", x: 200, y: -75, x2: 475, y2: -75, width: 5 },
+    { type: "wall", x: 475, y: -75, x2: 475, y2: 75, width: 5 },
+    { type: "goal", x: 400, y: 0 },
+  ],
+  [
+    { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
+    { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
+    { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
+    { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+    { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+    { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
+    { type: "wall", x: 200, y: -75, x2: 325, y2: -75, width: 5 },
+    { type: "wall", x: 475, y: -350, x2: 475, y2: 75, width: 5 },
+    { type: "wall", x: -475, y: -350, x2: 475, y2: -350, width: 5 },
+    { type: "wall", x: -475, y: -350, x2: -475, y2: 0, width: 5 },
+    { type: "wall", x: -350, y: -200, x2: -350, y2: 0, width: 5 },
+    { type: "wall", x: -475, y: 0, x2: -350, y2: 0, width: 5 },
+    { type: "wall", x: -350, y: -200, x2: 200, y2: -200, width: 5 },
+    { type: "goal", x: -412.5, y: -75 },
+  ],
+  [
+    { type: "function", todo: () => { Player.size = 100 } },
+    { type: "wall", x: -55, y: 55, x2: 1000, y2: 55, width: 5 },
+    { type: "wall", x: -55, y: -55, x2: 1000, y2: -55, width: 5 },
+    { type: "wall", x: -55, y: -55, x2: -55, y2: 55, width: 5 },
+    { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
+    { type: "goal", x: 925, y: 0 },
+  ]])
+  return (StageData[StageNumber]);
 };
-let FieldObjects = FObj();
+let FieldObjects = FObj(0);
 
 function preload() {
   FontsBlack = loadFont("./assets/MPLUSRounded1c-Black.ttf");
@@ -289,6 +314,7 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  frameRate(60);
 }
 
 function draw() {
@@ -304,7 +330,9 @@ function draw() {
       tempchara.renderer();
       textSize(80);
       textFont(FontsBlack);
-      fill("#000000");
+      strokeWeight(15)
+      stroke("#000000");
+      fill("#ffff00")
       text(
         "MouseMouse",
         windowWidth / 2 - textWidth("mousemouse") / 2,
@@ -312,24 +340,30 @@ function draw() {
       );
       Buttons.TopPageBtn.renderer();
       Buttons.Sosahouhou.smalltextsize = 30;
-      Buttons.Sosahouhou.largetextsize = 40;
-      Buttons.Sosahouhou.biggerval = 10;
+      Buttons.Sosahouhou.largetextsize = 34;
+      Buttons.Sosahouhou.biggerval = 4;
       Buttons.Sosahouhou.renderer();
       //devtool();
       break;
 
     case "start":
+      /*
       Buttons.Home.smalltextsize = 50;
       Buttons.Home.largetextsize = 50;
       Buttons.Home.biggerval = 0;
       Buttons.Home.renderer();
+      */
       //console.log(Speed);
-      if (mouseIsPressed && !Player.death) {
+      if (mouseIsPressed && Player.state == "arrive") {
         Speed += 0.2;
-      } else if (Speed > 0 && !Player.death) {
+      } else if (Speed > 0 && Player.state == "arrive") {
         Speed /= Decelerationrate;
       } else {
         Speed = 0;
+      }
+      if (wait) {
+        Speed = 0;
+        wait--;
       }
       //$("body").css("cursor","none");
       if (mouseX >= windowWidth / 2) {
@@ -341,6 +375,7 @@ function draw() {
           (mouseY - windowHeight / 2) / (mouseX - windowWidth / 2)
         );
       }
+      //console.log(FieldObjects)
       FieldObjects.map((e, index) => {
         switch (e.type) {
           case "wall":
@@ -354,7 +389,7 @@ function draw() {
             newwall.chr = Player.size / 2;
             newwall.renderer();
             if (newwall.touchPlayer) {
-              Player.death = true;
+              Player.state = "death";
             }
             break;
 
@@ -362,29 +397,72 @@ function draw() {
             FieldObjects[index].x += Speed * cos(Player.direction);
             FieldObjects[index].y += Speed * sin(Player.direction);
             let goalobj = new goal(e.x, e.y);
+            goalobj.chx = Player.x - windowWidth / 2;
+            goalobj.chy = Player.y - windowHeight / 2;
             goalobj.renderer();
+            if (goalobj.isGoal) {
+              Player.state = "goal";
+            }
+            break;
+          case "function":
+            e.todo.call();
             break;
         }
       })
       Player.renderer();
-      if (Player.death) {
+      if(wait){
+        textSize(50);
+        fill("#000000");
+        text(
+          Math.floor((wait + 60) / 60),
+          windowWidth / 2 - textWidth(Math.floor((wait + 60) / 60)) / 2,
+          windowHeight / 2
+        );
+      }
+      if (Player.state == "death") {
         new Button("ReStart", windowWidth / 2, windowHeight / 3, () => {
-          FieldObjects = FObj();
+          FieldObjects = FObj(StageNum);
           Player.x = windowWidth / 2;
           Player.y = windowHeight / 2;
           Player.direction = 0;
           Player.deathAnimation = 0;
-          Player.death = false;
+          Player.state = "arrive";
+          wait = 180;
         }).renderer();
 
         new Button("Back Home", windowWidth / 2, (windowHeight * 2) / 3, () => {
           mode = "";
-          FieldObjects = FObj();
+          FieldObjects = FObj(StageNum);
           Player.x = windowWidth / 2;
           Player.y = windowHeight / 2;
           Player.direction = 0;
           Player.deathAnimation = 0;
-          Player.death = false;
+          Player.state = "arrive";
+          wait = 180;
+        }).renderer();
+      }
+
+      if (Player.state == "goal") {
+        textSize(80);
+        textFont(FontsBlack);
+        strokeWeight(5);
+        stroke("#000000");
+        fill("#ffff00");
+        text(
+          "Goal",
+          windowWidth / 2 - textWidth("Goal") / 2,
+          windowHeight / 3
+        );
+        strokeWeight(0);
+        new Button("Next Stage", windowWidth / 2, windowHeight / 2, () => {
+          StageNum += 1;
+          FieldObjects = FObj(StageNum);
+          Player.x = windowWidth / 2;
+          Player.y = windowHeight / 2;
+          Player.direction = 0;
+          Player.deathAnimation = 0;
+          Player.state = "arrive";
+          wait = 180;
         }).renderer();
       }
       break;
