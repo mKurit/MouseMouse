@@ -1,106 +1,4 @@
-// function
-function circleLineCollision(
-  circleX,
-  circleY,
-  radius,
-  lineStartX,
-  lineStartY,
-  lineEndX,
-  lineEndY
-) {
-
-  var lineVector = { x: lineEndX - lineStartX, y: lineEndY - lineStartY };
-
-  var circleVector = { x: circleX - lineStartX, y: circleY - lineStartY };
-
-  var lineLengthSquared =
-    lineVector.x * lineVector.x + lineVector.y * lineVector.y;
-
-  var normalizedLineVector = {
-    x: lineVector.x / Math.sqrt(lineLengthSquared),
-    y: lineVector.y / Math.sqrt(lineLengthSquared),
-  };
-
-  var projection =
-    normalizedLineVector.x * circleVector.x +
-    normalizedLineVector.y * circleVector.y;
-
-
-
-  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
-
-    var distanceToCircle = Math.sqrt(
-      (circleVector.x - projection * normalizedLineVector.x) ** 2 +
-      (circleVector.y - projection * normalizedLineVector.y) ** 2
-    );
-
-    //console.log(distanceToCircle,radius);
-
-    if (distanceToCircle <= radius) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 //Class
-class Button {
-  constructor(textv, x, y, func) {
-    this.text = textv;
-    this.x = x;
-    this.y = y;
-    this.textsize = 60;
-    this.smalltextsize = 60;
-    this.largetextsize = 64;
-    this.biggerval = 4;
-    this.func = func;
-  }
-
-  renderer() {
-    this.textsize = this.smalltextsize;
-    if (
-      mouseX >= this.x - textWidth(this.text) / 2 - this.biggerval / 2 &&
-      mouseX <= this.x + textWidth(this.text) / 2 + this.biggerval / 2 &&
-      mouseY >= this.y - this.textsize / 2 - this.biggerval / 4 &&
-      mouseY <= this.y + this.textsize / 2 + this.biggerval / 4
-    ) {
-      if (mouseIsPressed) {
-        Audios.ClickSound.play();
-        this.func.call();
-      }
-      this.textsize = this.largetextsize;
-    } else {
-      this.textsize = this.smalltextsize;
-    }
-    textSize(this.textsize);
-    textFont(FontsMedium);
-    fill("#ffffff");
-    stroke("black");
-    strokeWeight(1);
-    rect(
-      this.x - textWidth(this.text) / 2 - this.biggerval / 2,
-      this.y - this.textsize / 2 - this.biggerval / 4,
-      textWidth(this.text) + this.biggerval,
-      this.textsize + this.biggerval / 2,
-      5
-    );
-    fill("#000000");
-    text(
-      this.text,
-      this.x - textWidth(this.text) / 2,
-      this.y + this.textsize / 3
-    );
-    /*
-    stroke("purple");
-    strokeWeight(10);
-    point(this.x, this.y);
-    stroke("black");
-    strokeWeight(1);
-    */
-  }
-}
-
 class Chara {
   constructor(x, y, size, direction) {
     this.x = x;
@@ -171,6 +69,51 @@ class Chara {
   }
 }
 
+function circleLineCollision(
+  circleX,
+  circleY,
+  radius,
+  lineStartX,
+  lineStartY,
+  lineEndX,
+  lineEndY
+) {
+
+  var lineVector = { x: lineEndX - lineStartX, y: lineEndY - lineStartY };
+
+  var circleVector = { x: circleX - lineStartX, y: circleY - lineStartY };
+
+  var lineLengthSquared =
+    lineVector.x * lineVector.x + lineVector.y * lineVector.y;
+
+  var normalizedLineVector = {
+    x: lineVector.x / Math.sqrt(lineLengthSquared),
+    y: lineVector.y / Math.sqrt(lineLengthSquared),
+  };
+
+  var projection =
+    normalizedLineVector.x * circleVector.x +
+    normalizedLineVector.y * circleVector.y;
+
+
+
+  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
+
+    var distanceToCircle = Math.sqrt(
+      (circleVector.x - projection * normalizedLineVector.x) ** 2 +
+      (circleVector.y - projection * normalizedLineVector.y) ** 2
+    );
+
+    //console.log(distanceToCircle,radius);
+
+    if (distanceToCircle <= radius) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 class wall {
   constructor(x, y, x2, y2, width) {
     this.x = x;
@@ -208,6 +151,62 @@ class wall {
     ) {
       this.touchPlayer = true;
     }
+  }
+}
+
+class Button {
+  constructor(textv, x, y, func) {
+    this.text = textv;
+    this.x = x;
+    this.y = y;
+    this.textsize = 60;
+    this.smalltextsize = 60;
+    this.largetextsize = 64;
+    this.biggerval = 4;
+    this.func = func;
+  }
+
+  renderer() {
+    this.textsize = this.smalltextsize;
+    if (
+      mouseX >= this.x - textWidth(this.text) / 2 - this.biggerval / 2 &&
+      mouseX <= this.x + textWidth(this.text) / 2 + this.biggerval / 2 &&
+      mouseY >= this.y - this.textsize / 2 - this.biggerval / 4 &&
+      mouseY <= this.y + this.textsize / 2 + this.biggerval / 4
+    ) {
+      if (mouseIsPressed) {
+        Audios.ClickSound.play();
+        this.func.call();
+      }
+      this.textsize = this.largetextsize;
+    } else {
+      this.textsize = this.smalltextsize;
+    }
+    textSize(this.textsize);
+    textFont(FontsMedium);
+    fill("#ffffff");
+    stroke("black");
+    strokeWeight(1);
+    rect(
+      this.x - textWidth(this.text) / 2 - this.biggerval / 2,
+      this.y - this.textsize / 2 - this.biggerval / 4,
+      textWidth(this.text) + this.biggerval,
+      this.textsize + this.biggerval / 2,
+      5
+    );
+    fill("#000000");
+    text(
+      this.text,
+      this.x - textWidth(this.text) / 2,
+      this.y + this.textsize / 3
+    );
+    /*
+    stroke("purple");
+    strokeWeight(10);
+    point(this.x, this.y);
+    stroke("black");
+    strokeWeight(1);
+    */
   }
 }
 
@@ -410,7 +409,7 @@ function draw() {
         }
       })
       Player.renderer();
-      if(wait){
+      if (wait) {
         textSize(50);
         fill("#000000");
         text(

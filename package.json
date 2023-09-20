@@ -1,8 +1,8 @@
 {
-  "name": "mousemouse",
+  "name": "my-webpack-project",
   "productName": "mousemouse",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "My webpack project",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
