@@ -48,21 +48,21 @@ class Chara {
       fill("#ffffff");
       circle(
         this.x -
-        ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
-        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
+          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-        ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
-        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
+          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
 
       circle(
         this.x -
-        ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
-        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
+          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-        ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
-        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
+          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
     }
@@ -78,7 +78,6 @@ function circleLineCollision(
   lineEndX,
   lineEndY
 ) {
-
   var lineVector = { x: lineEndX - lineStartX, y: lineEndY - lineStartY };
 
   var circleVector = { x: circleX - lineStartX, y: circleY - lineStartY };
@@ -95,13 +94,10 @@ function circleLineCollision(
     normalizedLineVector.x * circleVector.x +
     normalizedLineVector.y * circleVector.y;
 
-
-
   if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
-
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
-      (circleVector.y - projection * normalizedLineVector.y) ** 2
+        (circleVector.y - projection * normalizedLineVector.y) ** 2
     );
 
     //console.log(distanceToCircle,radius);
@@ -245,10 +241,15 @@ function devtool() {
 let FontsBlack, FontsMedium, FontsLight;
 let mode = "";
 let Buttons = {
-  TopPageBtn: new Button("Start", window.innerWidth / 2, window.innerHeight / 2, function () {
-    mode = "start";
-    console.log("butn pressed!");
-  }),
+  TopPageBtn: new Button(
+    "Start",
+    window.innerWidth / 2,
+    window.innerHeight / 2,
+    function () {
+      mode = "start";
+      console.log("butn pressed!");
+    }
+  ),
   Sosahouhou: new Button("操作方法", window.innerWidth - 100, 60, function () {
     console.log("操作方法");
   }),
@@ -256,7 +257,7 @@ let Buttons = {
     mode = "";
     console.log("ホームに戻る");
   }),
-}
+};
 let Audios = {
   ClickSound: new Audio("./assets/click.mp3"),
 };
@@ -266,42 +267,49 @@ let StageNum = 0;
 let Decelerationrate = 1.05;
 let wait = 180;
 const FObj = (StageNumber) => {
-  const StageData = ([[
-    { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
-    { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
-    { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
-    { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
-    { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
-    { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
-    { type: "wall", x: 200, y: -75, x2: 475, y2: -75, width: 5 },
-    { type: "wall", x: 475, y: -75, x2: 475, y2: 75, width: 5 },
-    { type: "goal", x: 400, y: 0 },
-  ],
-  [
-    { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
-    { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
-    { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
-    { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
-    { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
-    { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
-    { type: "wall", x: 200, y: -75, x2: 325, y2: -75, width: 5 },
-    { type: "wall", x: 475, y: -350, x2: 475, y2: 75, width: 5 },
-    { type: "wall", x: -475, y: -350, x2: 475, y2: -350, width: 5 },
-    { type: "wall", x: -475, y: -350, x2: -475, y2: 0, width: 5 },
-    { type: "wall", x: -350, y: -200, x2: -350, y2: 0, width: 5 },
-    { type: "wall", x: -475, y: 0, x2: -350, y2: 0, width: 5 },
-    { type: "wall", x: -350, y: -200, x2: 200, y2: -200, width: 5 },
-    { type: "goal", x: -412.5, y: -75 },
-  ],
-  [
-    { type: "function", todo: () => { Player.size = 100 } },
-    { type: "wall", x: -55, y: 55, x2: 1000, y2: 55, width: 5 },
-    { type: "wall", x: -55, y: -55, x2: 1000, y2: -55, width: 5 },
-    { type: "wall", x: -55, y: -55, x2: -55, y2: 55, width: 5 },
-    { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
-    { type: "goal", x: 925, y: 0 },
-  ]])
-  return (StageData[StageNumber]);
+  const StageData = [
+    [
+      { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
+      { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
+      { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
+      { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+      { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+      { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
+      { type: "wall", x: 200, y: -75, x2: 475, y2: -75, width: 5 },
+      { type: "wall", x: 475, y: -75, x2: 475, y2: 75, width: 5 },
+      { type: "goal", x: 400, y: 0 },
+    ],
+    [
+      { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
+      { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
+      { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
+      { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+      { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+      { type: "wall", x: 200, y: 75, x2: 475, y2: 75, width: 5 },
+      { type: "wall", x: 200, y: -75, x2: 325, y2: -75, width: 5 },
+      { type: "wall", x: 475, y: -350, x2: 475, y2: 75, width: 5 },
+      { type: "wall", x: -475, y: -350, x2: 475, y2: -350, width: 5 },
+      { type: "wall", x: -475, y: -350, x2: -475, y2: 0, width: 5 },
+      { type: "wall", x: -350, y: -200, x2: -350, y2: 0, width: 5 },
+      { type: "wall", x: -475, y: 0, x2: -350, y2: 0, width: 5 },
+      { type: "wall", x: -350, y: -200, x2: 200, y2: -200, width: 5 },
+      { type: "goal", x: -412.5, y: -75 },
+    ],
+    [
+      {
+        type: "function",
+        todo: () => {
+          Player.size = 100;
+        },
+      },
+      { type: "wall", x: -55, y: 55, x2: 1000, y2: 55, width: 5 },
+      { type: "wall", x: -55, y: -55, x2: 1000, y2: -55, width: 5 },
+      { type: "wall", x: -55, y: -55, x2: -55, y2: 55, width: 5 },
+      { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
+      { type: "goal", x: 925, y: 0 },
+    ],
+  ];
+  return StageData[StageNumber];
 };
 let FieldObjects = FObj(0);
 
@@ -329,9 +337,9 @@ function draw() {
       tempchara.renderer();
       textSize(80);
       textFont(FontsBlack);
-      strokeWeight(15)
+      strokeWeight(15);
       stroke("#000000");
-      fill("#ffff00")
+      fill("#ffff00");
       text(
         "MouseMouse",
         windowWidth / 2 - textWidth("mousemouse") / 2,
@@ -364,7 +372,11 @@ function draw() {
         Speed = 0;
         wait--;
       }
-      //$("body").css("cursor","none");
+      if (Player.state == "arrive") {
+        $("body").css("cursor", "none");
+      }else{
+        $("body").css("cursor", "default");
+      }
       if (mouseX >= windowWidth / 2) {
         Player.direction =
           Math.atan((mouseY - windowHeight / 2) / (mouseX - windowWidth / 2)) +
@@ -407,7 +419,7 @@ function draw() {
             e.todo.call();
             break;
         }
-      })
+      });
       Player.renderer();
       if (wait) {
         textSize(50);
@@ -447,11 +459,7 @@ function draw() {
         strokeWeight(5);
         stroke("#000000");
         fill("#ffff00");
-        text(
-          "Goal",
-          windowWidth / 2 - textWidth("Goal") / 2,
-          windowHeight / 3
-        );
+        text("Goal", windowWidth / 2 - textWidth("Goal") / 2, windowHeight / 3);
         strokeWeight(0);
         new Button("Next Stage", windowWidth / 2, windowHeight / 2, () => {
           StageNum += 1;
