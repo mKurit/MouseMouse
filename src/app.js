@@ -48,21 +48,21 @@ class Chara {
       fill("#ffffff");
       circle(
         this.x -
-          ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
-          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
+        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-          ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
-          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
+        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
 
       circle(
         this.x -
-          ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
-          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
+        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-          ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
-          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+        ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
+        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
     }
@@ -97,7 +97,7 @@ function circleLineCollision(
   if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
-        (circleVector.y - projection * normalizedLineVector.y) ** 2
+      (circleVector.y - projection * normalizedLineVector.y) ** 2
     );
 
     //console.log(distanceToCircle,radius);
@@ -308,6 +308,31 @@ const FObj = (StageNumber) => {
       { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
       { type: "goal", x: 925, y: 0 },
     ],
+    [
+      {
+        type: "function",
+        todo: () => {
+          Player.size = 90;
+        },
+      },
+      { type: "wall", x: -55, y: 55, x2: 1000, y2: 55, width: 5 },
+      { type: "wall", x: -55, y: -55, x2: 890, y2: -55, width: 5 },
+      { type: "wall", x: -55, y: -55, x2: -55, y2: 55, width: 5 },
+      { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
+      { type: "wall", x: 1000, y: -1000, x2: 1000, y2: 55, width: 5 },
+      { type: "wall", x: 890, y: -55, x2: 890, y2: -890, width: 5 },
+      { type: "wall", x: -55, y: -55, x2: -55, y2: 55, width: 5 },
+      { type: "wall", x: 1000, y: 55, x2: 1000, y2: -55, width: 5 },
+      { type: "wall", x: -55, y: -1000, x2: -55, y2: 55, width: 5 },
+      { type: "wall", x: -55, y: -1000, x2: 1000, y2: -1000, width: 5 },
+      { type: "wall", x: 55, y: -165, x2: 890, y2: -165, width: 5 },
+      { type: "wall", x: 55, y: -165, x2: 55, y2: -890, width: 5 },
+      { type: "wall", x: 55, y: -890, x2: 890, y2: -890, width: 5 },
+      { type: "goal", x: 835, y: -110 },
+      { type: "wall", x: 250, y: -500, x2: 750, y2: -500, width: 5 },
+      { type: "wall", x: 500, y: -165, x2: 500, y2: -890, width: 5 },
+      { type: "wall", x: 250, y: -500, x2: 500, y2: -890, width: 5 },
+    ],
   ];
   return StageData[StageNumber];
 };
@@ -374,7 +399,7 @@ function draw() {
       }
       if (Player.state == "arrive") {
         $("body").css("cursor", "none");
-      }else{
+      } else {
         $("body").css("cursor", "default");
       }
       if (mouseX >= windowWidth / 2) {
@@ -399,7 +424,7 @@ function draw() {
             newwall.chy = Player.y - windowHeight / 2;
             newwall.chr = Player.size / 2;
             newwall.renderer();
-            if (newwall.touchPlayer) {
+            if (newwall.touchPlayer && !location.href.includes("view")) {
               Player.state = "death";
             }
             break;
