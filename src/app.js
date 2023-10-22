@@ -13,7 +13,7 @@ class Chara {
     fill("#999999");
     if (this.state == "death" && this.deathAnimation == 0) {
       this.deathAnimation = 1;
-      new Audio("./assets/death.mp3").play();
+      Audios.DeathSound.play();
     }
     if (this.state == "death" && this.deathAnimation != 0) {
       for (var i = 0; i < 12; i++) {
@@ -232,6 +232,22 @@ class goal {
   }
 }
 
+class finis {
+  constructor() {
+  }
+
+  renderer() {
+    textFont(FontsMedium);
+    textSize(50);
+    fill("#000000");
+    text(
+      "Game Clear!\nThank you for Playing!\nEsc to back Home",
+      windowWidth / 2 - textWidth("Game Clear!\nThank you for Playing!") / 2,
+      windowHeight / 2
+    );
+  }
+}
+
 function devtool() {
   line(windowWidth / 2, 0, windowWidth / 2, windowHeight);
 }
@@ -250,9 +266,6 @@ let Buttons = {
       console.log("butn pressed!");
     }
   ),
-  Sosahouhou: new Button("操作方法", window.innerWidth - 100, 60, function () {
-    console.log("操作方法");
-  }),
   Home: new Button("🏠", window.innerWidth - 40, 40, function () {
     mode = "";
     console.log("ホームに戻る");
@@ -260,10 +273,15 @@ let Buttons = {
 };
 let Audios = {
   ClickSound: new Audio("./assets/click.mp3"),
+  DeathSound: new Audio("./assets/death.mp3"),
+  BGM: new Audio("./assets/アトリエと電脳世界.mp3")
 };
+
 let Player = new Chara(window.innerWidth / 2, window.innerHeight / 2, 80, 0);
-let Speed = 0;
-let StageNum = 0;
+let Speed = 0,clear = false;
+const searchParams = new URLSearchParams(window.location.search)
+let StageNum = (searchParams.has('stageID') ? searchParams.get('stageID') - 1 : 0);
+console.log(searchParams.get('stageID') - 1);
 let Decelerationrate = 1.05;
 let wait = 180;
 const FObj = (StageNumber) => {
@@ -329,14 +347,36 @@ const FObj = (StageNumber) => {
       { type: "wall", x: 55, y: -165, x2: 55, y2: -890, width: 5 },
       { type: "wall", x: 55, y: -890, x2: 890, y2: -890, width: 5 },
       { type: "goal", x: 835, y: -110 },
-      { type: "wall", x: 250, y: -500, x2: 750, y2: -500, width: 5 },
-      { type: "wall", x: 500, y: -165, x2: 500, y2: -890, width: 5 },
-      { type: "wall", x: 250, y: -500, x2: 500, y2: -890, width: 5 },
+    ],
+    [
+      {
+        type: "function",
+        todo: () => {
+          Player.size = 85;
+        },
+      },
+      { type: "wall", x: -200, y: 200, x2: -200, y2: -200, width: 5 },
+      { type: "wall", x: -200, y: 200, x2: 200, y2: 200, width: 5 },
+      { type: "wall", x: -200, y: -200, x2: 200, y2: -200, width: 5 },
+      { type: "wall", x: 200, y: 200, x2: 200, y2: 75, width: 5 },
+      { type: "wall", x: 200, y: -200, x2: 200, y2: -75, width: 5 },
+      { type: "wall", x: 200, y: 75, x2: 1075, y2: 575, width: 5 },
+      { type: "wall", x: 200, y: -75, x2: 975, y2: 400, width: 5 },
+      { type: "wall", x: 1075, y: 425, x2: 1075, y2: 575, width: 5 },
+      { type: "wall", x: 975, y: 400, x2: 975, y2: 300, width: 5 },
+      { type: "wall", x: 1075, y: 425, x2: 2200, y2: 1250, width: 5 },
+      { type: "wall", x: 1075, y: 275, x2: 2200, y2: 1125, width: 5 },
+      { type: "wall", x: 1075, y: 275, x2: 975, y2: 300, width: 5 },
+      { type: "wall", x: 2200, y: 1250, x2: 2200, y2: 1125, width: 5 },
+      { type: "goal", x: 2150, y: 1150 },
+    ],
+    [
+      { type: "FIN" },
     ],
   ];
   return StageData[StageNumber];
 };
-let FieldObjects = FObj(0);
+let FieldObjects = FObj(StageNum);
 
 function preload() {
   FontsBlack = loadFont("./assets/MPLUSRounded1c-Black.ttf");
@@ -347,6 +387,9 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(60);
+  Audios.BGM.loop = true;
+  Audios.BGM.volume = 0.2;
+  Audios.BGM.play();
 }
 
 function draw() {
@@ -371,10 +414,6 @@ function draw() {
         windowHeight / 3
       );
       Buttons.TopPageBtn.renderer();
-      Buttons.Sosahouhou.smalltextsize = 30;
-      Buttons.Sosahouhou.largetextsize = 34;
-      Buttons.Sosahouhou.biggerval = 4;
-      Buttons.Sosahouhou.renderer();
       //devtool();
       break;
 
@@ -440,6 +479,10 @@ function draw() {
               Player.state = "goal";
             }
             break;
+          case "FIN":
+            let fini = new finis().renderer();
+            clear = true;
+            break;
           case "function":
             e.todo.call();
             break;
@@ -498,5 +541,19 @@ function draw() {
         }).renderer();
       }
       break;
+  }
+}
+
+function keyPressed() {
+  if (keyCode === ESCAPE) {
+    mode = "";
+    FieldObjects = FObj(StageNum);
+    Player.x = windowWidth / 2;
+    Player.y = windowHeight / 2;
+    Player.direction = 0;
+    Player.deathAnimation = 0;
+    Player.state = "arrive";
+    wait = 180;
+    clear = true;
   }
 }
