@@ -94,7 +94,7 @@ function circleLineCollision(
     normalizedLineVector.x * circleVector.x +
     normalizedLineVector.y * circleVector.y;
 
-  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius) {
+  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius + 5) {
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
       (circleVector.y - projection * normalizedLineVector.y) ** 2
@@ -555,5 +555,6 @@ function keyPressed() {
     Player.state = "arrive";
     wait = 180;
     clear = true;
+    $("body").css("cursor", "default");
   }
 }
