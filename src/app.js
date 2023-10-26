@@ -48,25 +48,31 @@ class Chara {
       fill("#ffffff");
       circle(
         this.x -
-        ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
-        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.cos(this.direction + Math.PI / 6) +
+          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-        ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
-        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.sin(this.direction + Math.PI / 6) +
+          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
 
       circle(
         this.x -
-        ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
-        (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.cos(this.direction - Math.PI / 6) +
+          (this.size / 32) * Math.cos(this.direction + Math.PI / 6),
         this.y -
-        ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
-        (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
+          ((this.size * 2) / 5) * Math.sin(this.direction - Math.PI / 6) +
+          (this.size / 32) * Math.sin(this.direction + Math.PI / 6),
         this.size / 16
       );
     }
   }
+}
+
+function CalculationVectorLength(vector) {
+  var lineLengthSquared = vector.x * vector.x + vector.y * vector.y;
+
+  return Math.sqrt(lineLengthSquared);
 }
 
 function circleLineCollision(
@@ -82,6 +88,8 @@ function circleLineCollision(
 
   var circleVector = { x: circleX - lineStartX, y: circleY - lineStartY };
 
+  var circleVectorEnd = { x: circleX - lineEndX, y: circleY - lineEndY };
+
   var lineLengthSquared =
     lineVector.x * lineVector.x + lineVector.y * lineVector.y;
 
@@ -94,10 +102,30 @@ function circleLineCollision(
     normalizedLineVector.x * circleVector.x +
     normalizedLineVector.y * circleVector.y;
 
-  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared) + radius + 5) {
+  let distance_projection =
+    circleVector.x * normalizedLineVector.y -
+    normalizedLineVector.x * circleVector.y;
+/*
+  if (Math.abs(distance_projection) < radius) {
+    // 始点 => 終点と始点 => 円の中心の内積を計算する
+    var dot01 = circleVector.x * lineVector.x + circleVector.y * lineVector.y;
+    // 始点 => 終点と終点 => 円の中心の内積を計算する
+    var dot02 =
+      circleVectorEnd.x * lineVector.x + circleVectorEnd.y * lineVector.y;
+    if (dot01 * dot02 <= 0.0) {
+      if (
+        CalculationVectorLength(circleVector) < radius ||
+        CalculationVectorLength(circleVectorEnd) < radius
+      ) {
+        return true;
+      }
+    }
+  }*/
+
+  if (projection >= 0 && projection <= Math.sqrt(lineLengthSquared)) {
     var distanceToCircle = Math.sqrt(
       (circleVector.x - projection * normalizedLineVector.x) ** 2 +
-      (circleVector.y - projection * normalizedLineVector.y) ** 2
+        (circleVector.y - projection * normalizedLineVector.y) ** 2
     );
 
     //console.log(distanceToCircle,radius);
@@ -147,6 +175,22 @@ class wall {
     ) {
       this.touchPlayer = true;
     }
+  }
+}
+
+class marker {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  renderer() {
+    stroke("purple");
+    strokeWeight(20);
+    point(this.x, this.y);
+    console.log(`marker: ${this.x} ${this.y}`);
+    stroke("#000000");
+    strokeWeight(1);
   }
 }
 
@@ -233,8 +277,7 @@ class goal {
 }
 
 class finis {
-  constructor() {
-  }
+  constructor() {}
 
   renderer() {
     textFont(FontsMedium);
@@ -274,14 +317,17 @@ let Buttons = {
 let Audios = {
   ClickSound: new Audio("./assets/click.mp3"),
   DeathSound: new Audio("./assets/death.mp3"),
-  BGM: new Audio("./assets/アトリエと電脳世界.mp3")
+  BGM: new Audio("./assets/アトリエと電脳世界.mp3"),
 };
 
 let Player = new Chara(window.innerWidth / 2, window.innerHeight / 2, 80, 0);
-let Speed = 0,clear = false;
-const searchParams = new URLSearchParams(window.location.search)
-let StageNum = (searchParams.has('stageID') ? searchParams.get('stageID') - 1 : 0);
-console.log(searchParams.get('stageID') - 1);
+let Speed = 0,
+  clear = false;
+const searchParams = new URLSearchParams(window.location.search);
+let StageNum = searchParams.has("stageID")
+  ? searchParams.get("stageID") - 1
+  : 0;
+console.log(searchParams.get("stageID") - 1);
 let Decelerationrate = 1.05;
 let wait = 180;
 const FObj = (StageNumber) => {
@@ -370,9 +416,7 @@ const FObj = (StageNumber) => {
       { type: "wall", x: 2200, y: 1250, x2: 2200, y2: 1125, width: 5 },
       { type: "goal", x: 2150, y: 1150 },
     ],
-    [
-      { type: "FIN" },
-    ],
+    [{ type: "FIN" }],
   ];
   return StageData[StageNumber];
 };
@@ -459,13 +503,21 @@ function draw() {
             e.x2 += Speed * cos(Player.direction);
             e.y2 += Speed * sin(Player.direction);
             let newwall = new wall(e.x, e.y, e.x2, e.y2, e.width);
+            let markerwall = new marker(e.x, e.y);
             newwall.chx = Player.x - windowWidth / 2;
             newwall.chy = Player.y - windowHeight / 2;
             newwall.chr = Player.size / 2;
             newwall.renderer();
+            //markerwall.renderer();
             if (newwall.touchPlayer && !location.href.includes("view")) {
               Player.state = "death";
             }
+            break;
+          case "marker":
+            e.x += Speed * cos(Player.direction);
+            e.y += Speed * sin(Player.direction);
+            let newmarker = new marker(e.x, e.y);
+            //newmarker.renderer();
             break;
 
           case "goal":
