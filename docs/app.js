@@ -599,7 +599,7 @@ function draw() {
 function keyPressed() {
   if (keyCode === ESCAPE) {
     mode = "";
-    FieldObjects = FObj(StageNum);
+    StageNum = 0;
     Player.x = windowWidth / 2;
     Player.y = windowHeight / 2;
     Player.direction = 0;
