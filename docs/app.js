@@ -600,6 +600,7 @@ function keyPressed() {
   if (keyCode === ESCAPE) {
     mode = "";
     StageNum = 0;
+    FieldObjects = FObj(StageNum);
     Player.x = windowWidth / 2;
     Player.y = windowHeight / 2;
     Player.direction = 0;
